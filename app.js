@@ -31,3 +31,25 @@ function operate(operator,a,b){
             return divide(a,b);
     }
 }
+
+const container = document.querySelector('.container');
+const screen = document.querySelector('.screen');
+
+function addNumbers(){
+    for (i=9; i>=0; i--){
+        const numberBtn = document.createElement('div');
+        numberBtn.className = `btn-${i} num`;
+        numberBtn.innerText = `${i}`
+        container.appendChild(numberBtn);    
+    }
+}
+addNumbers();
+
+// functionality for writing the numbers on the screen when pressing on btn//
+let numBtnsNodeList = document.querySelectorAll('.num')
+for (i=0;i<numBtnsNodeList.length;i++){
+    let item = numBtnsNodeList[i];
+    item.addEventListener('click', () => {
+        screen.innerText = screen.innerText + item.innerText;
+    })
+}
