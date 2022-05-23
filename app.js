@@ -20,6 +20,9 @@ function divide(a,b) {
 
 //operate
 function operate(operator,a,b){
+    a = Number(a);
+    b = Number(b);
+
     switch(operator){
         case "+":
             return add(a,b);
@@ -34,7 +37,6 @@ function operate(operator,a,b){
 
 const container = document.querySelector('.container');
 const screen = document.querySelector('.screen');
-
 let screenText = document.querySelector('.screen').innerText
 
 // add 5 buttons for +,-,*,/,=
@@ -58,7 +60,6 @@ divideBtn.className = `divideBtn oper`;
 divideBtn.innerText = '/';
 container.appendChild(divideBtn);
 
-//
 const equalBtn = document.createElement('div');
 equalBtn.className = `equalBtn oper`;
 equalBtn.innerText = '=';
@@ -74,6 +75,30 @@ function addNumbers(){
     }
 }
 addNumbers();
+
+// dot button 
+const dotBtn = document.createElement('div');
+dotBtn.className = `dotBtn`;
+dotBtn.innerText = '.';
+container.appendChild(dotBtn);
+
+// Clear Btn
+const clearBtn = document.createElement('div');
+clearBtn.className = 'clearBtn';
+clearBtn.innerText = 'Clear';
+clearBtn.addEventListener('click', ()=> {
+    screen.innerText = '';
+})
+container.appendChild(clearBtn)
+
+// Backsapace Btn
+const backspaceBtn = document.createElement('div');
+backspaceBtn.className = 'backspaceBtn';
+backspaceBtn.innerText = 'Backspace';
+backspaceBtn.addEventListener('click', () => {
+    screen.innerText =  screen.innerText.slice(0,screen.innerText.length-1)
+})
+container.appendChild(backspaceBtn)
 
 // functionality for writing the numbers on the screen when pressing on btn//
 let numBtnsNodeList = document.querySelectorAll('.num')
@@ -91,45 +116,58 @@ for (i=0;i<operBtnsNodeList.length-1;i++){
     let item = operBtnsNodeList[i];
     item.addEventListener('click', () => {
         checkLastOper();
+        if (screen.innerText.includes('+') || screen.innerText.includes('-') || screen.innerText.includes('*') || screen.innerText.includes('/')){
+            screen.innerText = solveTwoOperands(screen.innerText);
+        }
         screen.innerText = screen.innerText + item.innerText;
+        // if the screen text already includes an operator then evaluate our result and then allow the next operation
     })
-}
+};
+
+//dotBtn functionality
+dotBtn.addEventListener('click', () => {
+    if (!screen.innerText.includes('.') ){
+        screen.innerText = screen.innerText + '.';
+    }
+})
 // operator = 
 let operateBtn = operBtnsNodeList[operBtnsNodeList.length-1];
 operateBtn.addEventListener('click', () => {
-    solveTwoOperands();  
+    let display = screen.innerText;
+    screen.innerText = solveTwoOperands(display);
 })
-
-// Clear Btn
-const clearBtn = document.createElement('div');
-clearBtn.className = 'clearBtn';
-clearBtn.innerText = 'Clear';
-clearBtn.addEventListener('click', ()=> {
-    screen.innerText = '';
-})
-container.appendChild(clearBtn)
 
 //Checks if last input on the screen is an operator
 
+let lastInput = screen.innerText[screen.innerText.length-1];
+
 function checkLastOper () {
-    if (screen.innerText[screen.innerText.length-1] === '+' || screen.innerText[screen.innerText.length-1] === '-' || screen.innerText[screen.innerText.length-1] === '*' || screen.innerText[screen.innerText.length-1] === '/' || screen.innerText[screen.innerText.length-1] === '='){
-        screen.innerText[screen.innerText.length-1] = item.innerText;
+    if (lastInput === '+' || lastInput === '-' || lastInput === '*' || lastInput === '/' || lastInput === '=') {
+        lastInput = item.innerText;
         return;
     }
 }
 
-function solveTwoOperands(){
-if(screen.innerText.includes('+')){
-    let operands = screen.innerText.split('+')
-    screen.innerText = operate('+',parseInt(operands[0]),parseInt(operands[1]))
-} else if(screen.innerText.includes('-')){
-    let operands = screen.innerText.split('-')
-    screen.innerText = operate('-',parseInt(operands[0]),parseInt(operands[1]))
-} else if(screen.innerText.includes('/')){
-    let operands = screen.innerText.split('/')
-    screen.innerText = operate('/',parseInt(operands[0]),parseInt(operands[1]))
-} else if(screen.innerText.includes('*')){
-    let operands = screen.innerText.split('*')
-    screen.innerText = operate('*',parseInt(operands[0]),parseInt(operands[1]))
-}     
+
+function solveTwoOperands(string){
+
+if(string.includes('+')){
+    let operands = string.split('+')
+    let result = operate('+',Number(operands[0]),Number(operands[1]));
+    string = result;
+} else if(string.includes('-')){
+    let operands = string.split('-')
+    let result = operate('-',Number(operands[0]),Number(operands[1]));
+    string = result;
+} else if(string.includes('/')){
+    let operands = string.split('/')
+    if (operands[1] === '0') { string = "Cute! Try again"; return;};
+    let result  = operate('/',Number(operands[0]),Number(operands[1]));
+    string = result;
+} else if(string.includes('*')){
+    let operands = string.split('*')
+    let result  = operate('*',Number(operands[0]),Number(operands[1]));
+    string = result;
+}
+return string;
 }
